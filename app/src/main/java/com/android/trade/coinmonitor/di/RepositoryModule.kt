@@ -3,7 +3,7 @@ package com.android.trade.coinmonitor.di
 import com.android.trade.data.implementations.CoinRepositoryImpl
 import com.android.trade.data.local.datasource.LocalDataSource
 import com.android.trade.data.mapper.CoinDataMapper
-import com.android.trade.data.remote.datasource.RemoteDataSource
+import com.android.trade.data.remote.datasource.CoinDataSource
 import com.android.trade.domain.repositories.CoinRepository
 import dagger.Module
 import dagger.Provides
@@ -18,12 +18,12 @@ object RepositoryModule {
     @Singleton
     fun provideCoinRepository(
         localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource,
+        coinDataSource: CoinDataSource,
         mapper: CoinDataMapper
     ): CoinRepository {
         return CoinRepositoryImpl(
             localDataSource = localDataSource,
-            remoteDataSource = remoteDataSource,
+            coinDataSource = coinDataSource,
             mapper = mapper
         )
     }

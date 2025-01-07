@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.ui
+package com.android.trade.presentation.ui
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -7,8 +7,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import com.android.trade.coinmonitor.R
-import com.android.trade.coinmonitor.databinding.ActivityMainBinding
+import com.android.trade.presentation.R
+import com.android.trade.presentation.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

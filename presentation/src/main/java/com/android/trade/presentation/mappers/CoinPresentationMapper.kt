@@ -1,26 +1,28 @@
 package com.android.trade.presentation.mappers
 
 import com.android.trade.domain.ApiResult
-import com.android.trade.domain.models.CoinDomainModel
-import com.android.trade.presentation.models.CoinUiModel
+import com.android.trade.domain.mappers.BaseMapper
+import com.android.trade.domain.models.UpbitMarket
+import com.android.trade.presentation.models.UpbitMarketUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-object CoinPresentationMapper {
-    fun domainToUI(coinFlow:Flow<ApiResult<CoinDomainModel>>): Flow<ApiResult<CoinUiModel>> {
-        return coinFlow.map { coin->
-            when(coin){
-                is ApiResult.Success -> ApiResult.Success(CoinUiModel(id = coin.value.id))
-                is ApiResult.Empty -> ApiResult.Empty
-                is ApiResult.Loading -> ApiResult.Loading
-                is ApiResult.Error -> ApiResult.Error(coin.code, coin.exception)
+class CoinPresentationMapper @Inject constructor(): BaseMapper() {
+    fun domainToUIUpbitMarket(flow: Flow<ApiResult<UpbitMarket>>): Flow<ApiResult<UpbitMarketUiModel>> {
+        return apiResultMapper(flow) {
+            val list = UpbitMarketUiModel().apply {
+                addAll(
+                    it.map { item ->
+                        UpbitMarketUiModel.Item(
+                            market = item.market,
+                            name = item.english_name
+                        )
+                    }
+                )
             }
-        }
-    }
 
-    fun uiToDomain(coin: CoinUiModel): CoinDomainModel {
-        return CoinDomainModel(
-            id = coin.id
-        )
+            ApiResult.Success(list)
+        }
     }
 }

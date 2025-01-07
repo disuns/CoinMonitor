@@ -2,8 +2,8 @@ package com.android.trade.coinmonitor.di
 
 import com.android.trade.data.local.datasource.LocalDataSource
 import com.android.trade.data.local.datasource.LocalDataSourceImpl
-import com.android.trade.data.remote.datasource.RemoteDataSource
-import com.android.trade.data.remote.datasource.RemoteDataSourceImpl
+import com.android.trade.data.remote.datasource.CoinDataSource
+import com.android.trade.data.remote.datasource.impl.CoinDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,9 +15,9 @@ import javax.inject.Singleton
 abstract class DataSourceModule {
     @Binds
     @Singleton
-    abstract fun bindRemoteDataSource(
-        remoteDataSourceImpl: RemoteDataSourceImpl
-    ): RemoteDataSource
+    abstract fun bindCoinDataSource(
+        coinDataSourceImpl : CoinDataSourceImpl
+    ): CoinDataSource
 
     @Binds
     @Singleton

@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.ui.fragment
+package com.android.trade.presentation.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

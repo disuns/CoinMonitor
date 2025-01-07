@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CoinMonitor</string>
+
+    <string-array name="exchange">
+        <item>Upbit</item>
+    </string-array>
+</resources>
