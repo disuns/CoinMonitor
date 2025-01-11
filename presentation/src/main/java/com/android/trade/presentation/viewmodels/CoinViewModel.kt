@@ -1,5 +1,6 @@
 package com.android.trade.presentation.viewmodels
 
+import com.android.trade.domain.ApiResult
 import com.android.trade.domain.usecase.GetUpbitMarketUseCase
 import com.android.trade.presentation.mappers.CoinPresentationMapper
 import com.android.trade.presentation.models.state.UpbitMarketViewState
@@ -15,5 +16,11 @@ class CoinViewModel @Inject constructor(
         fetchData(mapper.domainToUIUpbitMarket(getUpbitMarketUseCase())) { currentState, result->
             currentState.copy(upbitMarketState = result)
         }
+    }
+
+    fun resetState(){
+        _state.value = _state.value.copy(
+            upbitMarketState = ApiResult.Empty
+        )
     }
 }

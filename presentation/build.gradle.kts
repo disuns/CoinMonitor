@@ -54,4 +54,5 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.bundles.navigator)
+    implementation(libs.androidx.datastore)
 }

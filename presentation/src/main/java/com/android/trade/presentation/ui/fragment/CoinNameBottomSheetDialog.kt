@@ -1,7 +1,8 @@
 package com.android.trade.presentation.ui.fragment
 
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.trade.common.utils.logMessage
 import com.android.trade.presentation.adapter.CoinNameAdapter
 import com.android.trade.presentation.databinding.BottomSheetCoinNameBinding
 import com.android.trade.presentation.models.UpbitMarketUiModel
@@ -12,10 +13,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CoinNameBottomSheetDialog @Inject constructor(
-    val exchange : UpbitMarketUiModel
+    val exchange: UpbitMarketUiModel
 ): BaseBottomSheetDialog<BottomSheetCoinNameBinding, CoinViewModel>(
     BottomSheetCoinNameBinding::inflate) {
-    override val viewModel: CoinViewModel by viewModels()
+    override val viewModel: CoinViewModel by activityViewModels()
     override fun setupView() {
         setupRecyclerView()
     }
@@ -28,6 +29,7 @@ class CoinNameBottomSheetDialog @Inject constructor(
             }
 
             val adapter = CoinNameAdapter(exchange) { itemText->
+                viewModel.resetState()
                 dismiss()
             }
 
