@@ -13,7 +13,9 @@ class CoinPresentationMapper @Inject constructor(): BaseMapper() {
         return apiResultMapper(flow) {
             val list = UpbitMarketUiModel().apply {
                 addAll(
-                    it.map { item ->
+                    it.filter { item->
+                        item.market.contains("KRW")
+                    }.map { item ->
                         UpbitMarketUiModel.Item(
                             market = item.market,
                             name = item.english_name

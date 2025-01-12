@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAppTheme(isDarkMode: Boolean) {
-        logMessage(isDarkMode)
         val mode = if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(mode)
     }
