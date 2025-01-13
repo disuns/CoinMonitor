@@ -1,6 +1,6 @@
 package com.android.trade.presentation.ui.fragment
 
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMainBinding::inflate) {
-    override val viewModel: CoinViewModel by activityViewModels()
+    override val viewModel: CoinViewModel by viewModels()
     override fun setupView() {
         bind {
             btnGetMarket.setOnClickListener {
@@ -34,7 +34,7 @@ class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMa
                     when(uiState.upbitMarketState){
                         is ApiResult.Success -> {
                             if(uiState.upbitMarketState.value.size > 0) {
-                                val bottomSheet = CoinNameBottomSheetDialog(uiState.upbitMarketState.value)
+                                val bottomSheet = CoinNameBottomSheetDialog(uiState.upbitMarketState.value){viewModel.resetState()}
                                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
                             }
                         }

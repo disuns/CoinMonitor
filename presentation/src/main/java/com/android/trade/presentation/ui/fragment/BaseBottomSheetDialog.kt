@@ -4,19 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-abstract class BaseBottomSheetDialog<VB : ViewBinding, VM: ViewModel>(
+abstract class BaseBottomSheetDialog<VB : ViewBinding>(
     private val inflateBinding : (LayoutInflater, ViewGroup?, Boolean) -> VB
 ): BottomSheetDialogFragment() {
 
     private var _binding: VB? = null
     private val binding get() = _binding!!
-
-    abstract val viewModel: VM
 
     abstract fun setupView()
 

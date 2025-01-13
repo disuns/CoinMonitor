@@ -55,7 +55,7 @@ class ApiModule {
 
     @Singleton
     @Provides
-    fun provideNaverMapService(@UpbitRetrofit retrofit: Retrofit): UpbitService =
+    fun provideUpbitService(@UpbitRetrofit retrofit: Retrofit): UpbitService =
         retrofit.create(UpbitService::class.java)
 
 }
