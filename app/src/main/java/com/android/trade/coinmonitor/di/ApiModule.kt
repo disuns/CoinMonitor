@@ -1,7 +1,7 @@
 package com.android.trade.coinmonitor.di
 
 import com.android.trade.coinmonitor.BuildConfig
-import com.android.trade.data.remote.network.service.CoinService
+import com.android.trade.data.remote.network.service.UpbitService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,18 +48,18 @@ class ApiModule {
     }
 
     @Singleton
-    @CoinServiceRetroif
+    @UpbitRetrofit
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient) =
-        createRetrofit(okHttpClient, "https://apis.data.go.kr/")
+        createRetrofit(okHttpClient, "https://api.upbit.com/")
 
     @Singleton
     @Provides
-    fun provideNaverMapService(@CoinServiceRetroif retrofit: Retrofit): CoinService =
-        retrofit.create(CoinService::class.java)
+    fun provideUpbitService(@UpbitRetrofit retrofit: Retrofit): UpbitService =
+        retrofit.create(UpbitService::class.java)
 
 }
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class CoinServiceRetroif
+annotation class UpbitRetrofit

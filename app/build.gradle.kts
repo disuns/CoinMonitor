@@ -35,8 +35,8 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    viewBinding {
-        enable = true
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -54,8 +54,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.bundles.navigator)
 
     ksp(libs.hilt.compiler)
     implementation(libs.hilt)

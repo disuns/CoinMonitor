@@ -1,22 +1,23 @@
 package com.android.trade.coinmonitor.di
 
 import com.android.trade.domain.repositories.CoinRepository
-import com.android.trade.domain.usecase.GetCoinUseCase
-import com.android.trade.domain.usecaseimpl.GetCoinUseCaseImpl
+import com.android.trade.domain.usecase.GetUpbitMarketUseCase
+import com.android.trade.domain.usecaseimpl.GetUpbitMarketUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
 object UseCaseModule {
     @Provides
     @ViewModelScoped
-    fun provideGetCoinUseCase(
+    fun provideGetUpbitMarketUseCase(
         coinRepository: CoinRepository
-    ): GetCoinUseCase {
-        return GetCoinUseCaseImpl(coinRepository)
+    ): GetUpbitMarketUseCase {
+        return GetUpbitMarketUseCaseImpl(coinRepository)
     }
 }
