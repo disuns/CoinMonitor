@@ -30,7 +30,7 @@ class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMa
         }
     }
 
-    fun handleState(){
+    private fun handleState(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect { uiState ->
