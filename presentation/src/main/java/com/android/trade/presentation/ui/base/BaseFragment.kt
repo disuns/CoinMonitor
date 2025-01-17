@@ -1,28 +1,26 @@
-package com.android.trade.presentation.ui.fragment
+package com.android.trade.presentation.ui.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-abstract class BaseBottomSheetDialog<VB : ViewBinding>(
+abstract class BaseFragment<VB : ViewBinding, VM: ViewModel>(
     private val inflateBinding : (LayoutInflater, ViewGroup?, Boolean) -> VB
-): BottomSheetDialogFragment() {
-
+) : Fragment() {
     private var _binding: VB? = null
     private val binding get() = _binding!!
 
+    val navigator: NavController by lazy { findNavController() }
+
+    abstract val viewModel: VM
+
     abstract fun setupView()
-
-    override fun onStart() {
-        super.onStart()
-
-        val behavior = BottomSheetBehavior.from(requireView().parent as View)
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
