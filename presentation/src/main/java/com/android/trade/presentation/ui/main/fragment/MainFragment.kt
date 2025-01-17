@@ -1,4 +1,4 @@
-package com.android.trade.presentation.ui.fragment
+package com.android.trade.presentation.ui.main.fragment
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -6,6 +6,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.android.trade.domain.ApiResult
 import com.android.trade.presentation.databinding.FragmentMainBinding
+import com.android.trade.presentation.ui.base.BaseFragment
+import com.android.trade.presentation.ui.main.fragment.dialog.CoinExcahngeBottomSheetDialog
+import com.android.trade.presentation.ui.main.fragment.dialog.CoinNameBottomSheetDialog
 import com.android.trade.presentation.viewmodels.CoinViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,7 +30,7 @@ class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMa
         }
     }
 
-    fun handleState(){
+    private fun handleState(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect { uiState ->

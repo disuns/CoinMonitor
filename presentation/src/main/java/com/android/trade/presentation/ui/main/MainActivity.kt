@@ -1,4 +1,4 @@
-package com.android.trade.presentation.ui
+package com.android.trade.presentation.ui.main
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -12,19 +12,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.android.trade.common.utils.dataStore
-import com.android.trade.common.utils.logMessage
 import com.android.trade.presentation.R
 import com.android.trade.presentation.databinding.ActivityMainBinding
+import com.android.trade.presentation.ui.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
     private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
 
@@ -35,8 +33,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         lifecycleScope.launch {
             getDarkModeSetting()
@@ -51,7 +47,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
 
+    override fun setupView() {
         binding.btnDarkMode.setOnClickListener {
             lifecycleScope.launch {
                 val currentMode = getDarkModeSetting().first()

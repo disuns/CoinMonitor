@@ -1,9 +1,10 @@
-package com.android.trade.presentation.ui.fragment
+package com.android.trade.presentation.ui.main.fragment.dialog
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.trade.presentation.adapter.CoinNameAdapter
 import com.android.trade.presentation.databinding.BottomSheetCoinNameBinding
 import com.android.trade.presentation.models.UpbitMarketUiModel
+import com.android.trade.presentation.ui.base.BaseBottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

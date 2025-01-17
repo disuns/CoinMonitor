@@ -50,9 +50,19 @@ dependencies {
 
     implementation(libs.bundles.navigator)
 
+    //Hilt
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
 
+    //Navigator
     implementation(libs.bundles.navigator)
+
+    //Datastore
     implementation(libs.androidx.datastore)
+
+    //Lottie
+    implementation (libs.lottie)
+
+    //Splash Screen
+    implementation(libs.androidx.core.splashscreen)
 }
