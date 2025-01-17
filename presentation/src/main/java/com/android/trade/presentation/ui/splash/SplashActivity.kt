@@ -2,7 +2,6 @@ package com.android.trade.presentation.ui.splash
 
 import android.animation.Animator
 import android.os.Bundle
-import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.android.trade.presentation.databinding.ActivitySplashBinding
 import com.android.trade.presentation.ui.base.BaseActivity
