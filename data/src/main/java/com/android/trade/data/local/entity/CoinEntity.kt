@@ -5,5 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "coin")
 data class CoinEntity(
-    @PrimaryKey val id : Int
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val market: String,
+    val code: String,
+    val coinName: String
 )

@@ -4,6 +4,6 @@ import com.android.trade.domain.ApiResult
 import com.android.trade.domain.models.Market
 import kotlinx.coroutines.flow.Flow
 
-interface GetUpbitMarketUseCase {
+interface GetBinanceMarketUseCase {
     operator fun invoke() : Flow<ApiResult<Market>>
 }

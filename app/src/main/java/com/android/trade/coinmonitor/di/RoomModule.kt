@@ -21,7 +21,7 @@ object RoomModule {
             .databaseBuilder(
                 context,
                 AppDatabase::class.java,
-                "app_database")
+                "coin_database")
             .build()
     }
 

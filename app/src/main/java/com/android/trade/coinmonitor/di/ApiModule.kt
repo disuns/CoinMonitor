@@ -1,6 +1,9 @@
 package com.android.trade.coinmonitor.di
 
 import com.android.trade.coinmonitor.BuildConfig
+import com.android.trade.data.remote.network.service.BinanceService
+import com.android.trade.data.remote.network.service.BithumbService
+import com.android.trade.data.remote.network.service.BybitService
 import com.android.trade.data.remote.network.service.UpbitService
 import dagger.Module
 import dagger.Provides
@@ -50,7 +53,7 @@ class ApiModule {
     @Singleton
     @UpbitRetrofit
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient) =
+    fun provideUpbitRetrofit(okHttpClient: OkHttpClient) =
         createRetrofit(okHttpClient, "https://api.upbit.com/")
 
     @Singleton
@@ -58,8 +61,52 @@ class ApiModule {
     fun provideUpbitService(@UpbitRetrofit retrofit: Retrofit): UpbitService =
         retrofit.create(UpbitService::class.java)
 
+    @Singleton
+    @BithumbRetrofit
+    @Provides
+    fun provideBithumbRetrofit(okHttpClient: OkHttpClient) =
+        createRetrofit(okHttpClient, "https://api.bithumb.com")
+
+    @Singleton
+    @Provides
+    fun provideBithumbService(@BithumbRetrofit retrofit: Retrofit): BithumbService =
+        retrofit.create(BithumbService::class.java)
+
+    @Singleton
+    @BinanceRetrofit
+    @Provides
+    fun provideBinanceRetrofit(okHttpClient: OkHttpClient) =
+        createRetrofit(okHttpClient, "https://api.binance.com/")
+
+    @Singleton
+    @Provides
+    fun provideBinanceService(@BinanceRetrofit retrofit: Retrofit): BinanceService =
+        retrofit.create(BinanceService::class.java)
+
+    @Singleton
+    @BybitRetrofit
+    @Provides
+    fun provideBybitRetrofit(okHttpClient: OkHttpClient) =
+        createRetrofit(okHttpClient, "https://api.bybit.com/")
+
+    @Singleton
+    @Provides
+    fun provideBybitService(@BybitRetrofit retrofit: Retrofit): BybitService =
+        retrofit.create(BybitService::class.java)
 }
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class UpbitRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class BithumbRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class BinanceRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class BybitRetrofit
