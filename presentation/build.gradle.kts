@@ -65,4 +65,7 @@ dependencies {
 
     //Splash Screen
     implementation(libs.androidx.core.splashscreen)
+
+    //AdMob
+    implementation(libs.play.services.ads)
 }
