@@ -26,6 +26,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
 
                 override fun onAnimationEnd(animator: Animator) {
                     navigateActivity(MainActivity::class.java)
+                    finish()
                 }
 
                 override fun onAnimationCancel(animator: Animator) {}

@@ -4,6 +4,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
+<!--       실제 ID: ca-app-pub-1122670623771851~3657426017-->
+
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true"
@@ -16,5 +22,6 @@
         </activity>
 
         <activity android:name=".ui.main.MainActivity" />
+
     </application>
 </manifest>
