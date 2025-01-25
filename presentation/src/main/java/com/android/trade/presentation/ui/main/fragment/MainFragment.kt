@@ -22,7 +22,12 @@ import com.android.trade.presentation.viewmodels.RoomAndWebSocketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMainBinding::inflate) {
+class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
+    val coinViewModel: CoinViewModel by viewModels()
+    val roomAndWebSocketViewModel: RoomAndWebSocketViewModel by viewModels()
+
+    private lateinit var adapter: CoinInfoAdapter
+    private var coins: MutableList<CoinInfo> = mutableListOf()
 
     // Get the ad size with screen width.
     private val mAdSize: AdSize
@@ -39,15 +44,6 @@ class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMa
             val adWidth = (adWidthPixels / density).toInt()
             return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(requireActivity(), adWidth)
         }
-
-    override val viewModel: CoinViewModel by viewModels()
-
-class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
-    val coinViewModel: CoinViewModel by viewModels()
-    val roomAndWebSocketViewModel: RoomAndWebSocketViewModel by viewModels()
-
-    private lateinit var adapter: CoinInfoAdapter
-    private var coins: MutableList<CoinInfo> = mutableListOf()
 
     override fun setupView() {
         bind {
