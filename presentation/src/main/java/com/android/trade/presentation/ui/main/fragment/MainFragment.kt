@@ -1,7 +1,6 @@
 package com.android.trade.presentation.ui.main.fragment
 
 import android.os.Build
-import android.os.Bundle
 import android.view.WindowMetrics
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -40,12 +39,6 @@ class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMa
         }
 
     override val viewModel: CoinViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // AdMob 초기화
-        MobileAds.initialize(requireActivity())
-    }
 
     override fun setupView() {
         bind {
@@ -86,6 +79,10 @@ class MainFragment : BaseFragment<FragmentMainBinding, CoinViewModel>(FragmentMa
     }
 
     private fun setAndPlayAdMob() {
+
+        // AdMob 초기화
+        MobileAds.initialize(requireActivity())
+
         bind {
             val adView = AdView(requireActivity()).apply {
                 adUnitId = "ca-app-pub-3940256099942544/6300978111" // 실제 ID : ca-app-pub-1122670623771851/3536074882
