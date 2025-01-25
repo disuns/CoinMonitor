@@ -31,7 +31,17 @@ class RoomAndWebSocketViewModel @Inject constructor(
     init {
         webSocketManager.setWebSocketListener { webSocketData ->
             viewModelScope.launch {
-                webSocketData?.let {
+                webSocketData?.let {data ->
+//                    val updatedList = _state.coinsListState.value.map { coin ->
+//                        if (coin.market == data.market && coin.code == data.code && data.price != null) {
+//                            val coinInfo = mapper.domainToUIPrice(data)
+//                            coin.copy(price = coinInfo.price!!)
+//                        } else {
+//                            coin
+//                        }
+//                    }
+//                    updateState(_state.coinsListState, updatedList)
+
                     _messages.postValue(mapper.domainToUIPrice(webSocketData))
                 }
             }
@@ -66,7 +76,6 @@ class RoomAndWebSocketViewModel @Inject constructor(
 
     fun sendMessage(market: String, codes: MutableList<String>) {
         viewModelScope.launch {
-            _state.coinsListState.value
             webSocketManager.sendMessage(market,codes)
         }
     }
@@ -81,7 +90,12 @@ class RoomAndWebSocketViewModel @Inject constructor(
             val insertString = roomInsertCoin(coinInfo)
             if(insertString.isBlank())logMessage(coinInfo)
             else logMessage(insertString)
+
             getAllCoin()
+//            val currentList = _state.coinsListState.value.toMutableList()
+//            currentList.add(coinInfo)
+//            updateState(_state.coinsListState, currentList)
+
             delay(100)
             val coinList = _state.coinsListState.value.filter { it.market == coinInfo.market }.map { it.code }.toMutableList()
             sendMessage(coinInfo.market, coinList)
@@ -97,15 +111,21 @@ class RoomAndWebSocketViewModel @Inject constructor(
     fun deleteCoin(coinInfo: CoinInfo){
         viewModelScope.launch {
             roomDeleteCoin(coinInfo.market, coinInfo.code)
-            getAllCoin()
             delay(100)
-            val exists = _state.coinsListState.value.any { it.market == coinInfo.market }
-            _state.coinsListState.value.groupBy { it.market == coinInfo.market }
-            if(!exists){
-                disconnectWebSocket(coinInfo.market)
-            }else{
-                val coinList = _state.coinsListState.value.filter { it.market == coinInfo.market }.map { it.code }.toMutableList()
-                sendMessage(coinInfo.market, coinList)
+            val currentList = _state.coinsListState.value.toMutableList()
+            val itemRemoved = currentList.removeAll { it.market == coinInfo.market && it.code == coinInfo.code }
+
+            if (itemRemoved) {
+                updateState(_state.coinsListState, currentList)
+
+                val exists = _state.coinsListState.value.any { it.market == coinInfo.market }
+                _state.coinsListState.value.groupBy { it.market == coinInfo.market }
+                if(!exists){
+                    disconnectWebSocket(coinInfo.market)
+                }else{
+                    val coinList = _state.coinsListState.value.filter { it.market == coinInfo.market }.map { it.code }.toMutableList()
+                    sendMessage(coinInfo.market, coinList)
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.android.trade.presentation.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.models.CoinInfo
 import com.android.trade.domain.models.WebSocketData
 import com.android.trade.presentation.databinding.ItemCoinInfoBinding
@@ -21,6 +22,7 @@ class CoinInfoAdapter(
     fun updatePrice(socketData: WebSocketData?) {
         if (socketData == null) return
         val position = items.indexOfFirst { it.market == socketData.market && it.code == socketData.code }
+
         if (position != -1 && items[position].price != socketData.price) {
 
             val updatedItem = items[position].copy(price = socketData.price ?: "")

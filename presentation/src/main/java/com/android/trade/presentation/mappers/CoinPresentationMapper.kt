@@ -38,28 +38,19 @@ class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapp
     }
 
     @SuppressLint("StringFormatMatches")
-    fun domainToUIPrice(webSocketData: WebSocketData?): WebSocketData? {
-        val price = when(webSocketData?.market){
-            "Upbit", "Bithumb"->{
-                webSocketData.price?.toDoubleOrNull()?.let {
-                    context.getString(R.string.won, it)
-                } ?: ""
+    fun domainToUIPrice(webSocketData: WebSocketData): WebSocketData {
+        val price = webSocketData.price?.toDoubleOrNull()?.let {
+            when (webSocketData.market) {
+                "Upbit", "Bithumb" -> context.getString(R.string.won, it)
+                "Binance", "Bybit" -> context.getString(R.string.dollor, it)
+                else -> ""
             }
-            "Binance", "Bybit" -> {
-                webSocketData.price?.toDoubleOrNull()?.let {
-                    context.getString(R.string.dollor, it)
-                } ?: ""
-            }
+        } ?: ""
 
-            else -> ""
-        }
-
-        return webSocketData?.let {
-            WebSocketData(
-                market = webSocketData.market,
-                code = webSocketData.code,
-                price = price
-            )
-        }
+        return WebSocketData(
+            market = webSocketData.market,
+            code = webSocketData.code,
+            price = price
+        )
     }
 }

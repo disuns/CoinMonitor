@@ -1,6 +1,5 @@
 package com.android.trade.data.mapper
 
-import com.android.trade.common.utils.logMessage
 import com.android.trade.data.local.entity.CoinEntity
 import com.android.trade.data.remote.response.BinanceResponse
 import com.android.trade.data.remote.response.BybitResponse
@@ -31,57 +30,48 @@ class CoinDataMapper @Inject constructor() : BaseMapper() {
         }
     }
 
-    fun responseToDomainCoin(response: Flow<ApiResult<MarketResponse>>): Flow<ApiResult<Market>> {
-        return apiResultMapper(response) {
+    private fun <T> responseToDomainCodeBase(
+        response: Flow<ApiResult<T>>,
+        mapItem: (T) -> List<Market.Item>
+    ): Flow<ApiResult<Market>> {
+        return apiResultMapper(response) { apiResult ->
             val list = Market().apply {
-                addAll(
-                    it.map { item ->
-                        Market.Item(
-                            market = item.market,
-                            korean_name = item.korean_name,
-                            english_name = item.english_name
-                        )
-                    }
+                addAll(mapItem(apiResult))
+            }
+            ApiResult.Success(list)
+        }
+    }
+
+    fun responseToDomainCoin(response: Flow<ApiResult<MarketResponse>>): Flow<ApiResult<Market>> {
+        return responseToDomainCodeBase(response){
+            it.map { item ->
+                Market.Item(
+                    market = item.market,
+                    english_name = item.english_name
                 )
             }
-
-            ApiResult.Success(list)
         }
     }
 
     fun responseToDomainBinanceCoin(response: Flow<ApiResult<BinanceResponse>>): Flow<ApiResult<Market>> {
-        return apiResultMapper(response) {
-            val list = Market().apply {
-                addAll(
-                    it.symbols.map { item ->
-                        Market.Item(
-                            market = item.symbol,
-                            korean_name = "",
-                            english_name = item.baseAsset
-                        )
-                    }
+        return responseToDomainCodeBase(response) {
+            it.symbols.map { item ->
+                Market.Item(
+                    market = item.symbol,
+                    english_name = item.baseAsset
                 )
             }
-
-            ApiResult.Success(list)
         }
     }
 
     fun responseToDomainBybitCoin(response: Flow<ApiResult<BybitResponse>>): Flow<ApiResult<Market>> {
-        return apiResultMapper(response) {
-            val list = Market().apply {
-                addAll(
-                    it.result.list.sortedByDescending {it.lastPrice.toDouble()}.map { item ->
-                        Market.Item(
-                            market = item.symbol,
-                            korean_name = "",
-                            english_name = item.symbol
-                        )
-                    }
+        return responseToDomainCodeBase(response) {
+            it.result.list.sortedByDescending { it.lastPrice.toDouble() }.map { item ->
+                Market.Item(
+                    market = item.symbol,
+                    english_name = item.symbol
                 )
             }
-
-            ApiResult.Success(list)
         }
     }
 }

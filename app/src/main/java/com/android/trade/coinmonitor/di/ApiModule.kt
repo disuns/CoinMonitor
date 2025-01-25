@@ -1,6 +1,10 @@
 package com.android.trade.coinmonitor.di
 
 import com.android.trade.coinmonitor.BuildConfig
+import com.android.trade.common.utils.API_BINANCE
+import com.android.trade.common.utils.API_BITHUMB
+import com.android.trade.common.utils.API_BYBIT
+import com.android.trade.common.utils.API_UPBIT
 import com.android.trade.data.remote.network.service.BinanceService
 import com.android.trade.data.remote.network.service.BithumbService
 import com.android.trade.data.remote.network.service.BybitService
@@ -54,7 +58,7 @@ class ApiModule {
     @UpbitRetrofit
     @Provides
     fun provideUpbitRetrofit(okHttpClient: OkHttpClient) =
-        createRetrofit(okHttpClient, "https://api.upbit.com/")
+        createRetrofit(okHttpClient, API_UPBIT)
 
     @Singleton
     @Provides
@@ -65,7 +69,7 @@ class ApiModule {
     @BithumbRetrofit
     @Provides
     fun provideBithumbRetrofit(okHttpClient: OkHttpClient) =
-        createRetrofit(okHttpClient, "https://api.bithumb.com")
+        createRetrofit(okHttpClient, API_BITHUMB)
 
     @Singleton
     @Provides
@@ -76,7 +80,7 @@ class ApiModule {
     @BinanceRetrofit
     @Provides
     fun provideBinanceRetrofit(okHttpClient: OkHttpClient) =
-        createRetrofit(okHttpClient, "https://api.binance.com/")
+        createRetrofit(okHttpClient, API_BINANCE)
 
     @Singleton
     @Provides
@@ -87,7 +91,7 @@ class ApiModule {
     @BybitRetrofit
     @Provides
     fun provideBybitRetrofit(okHttpClient: OkHttpClient) =
-        createRetrofit(okHttpClient, "https://api.bybit.com/")
+        createRetrofit(okHttpClient, API_BYBIT)
 
     @Singleton
     @Provides

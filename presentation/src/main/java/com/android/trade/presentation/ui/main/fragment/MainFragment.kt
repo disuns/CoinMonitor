@@ -81,7 +81,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 null->{
                     roomAndWebSocketViewModel.sendAllMessage()
                 }
-                else->adapter.updatePrice(message)
+                else-> {
+                    adapter.updatePrice(message)
+                }
             }
         }
     }
