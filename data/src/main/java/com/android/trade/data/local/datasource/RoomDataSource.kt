@@ -1,0 +1,10 @@
+package com.android.trade.data.local.datasource
+
+import com.android.trade.data.local.entity.CoinEntity
+
+interface RoomDataSource {
+    suspend fun getCoin(market: String, code: String): CoinEntity?
+    suspend fun insertCoin(coin: CoinEntity): String
+    suspend fun getAllCoin(): MutableList<CoinEntity>
+    suspend fun deleteCoin(market: String, code: String)
+}
