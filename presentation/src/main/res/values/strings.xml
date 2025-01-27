@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">CoinMonitor</string>
 
+    <string name="dollor">\$%.3f</string>
+    <string name="won">₩%.0f</string>
+
     <string-array name="exchange">
         <item>Upbit</item>
+        <item>Bithumb</item>
+        <item>Binance</item>
+        <item>Bybit</item>
     </string-array>
 </resources>

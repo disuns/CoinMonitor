@@ -10,17 +10,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 open class BaseViewModel<S: BaseViewState>(initialState: S) : ViewModel()  {
-    protected val _state = MutableStateFlow(initialState)
-    val state: StateFlow<S> = _state
+    protected var _state = initialState
+    val state: S = _state
 
     protected fun <T> fetchData(
         mapperAndUsecase: Flow<ApiResult<T>>,
-        updateState: (currentState: S, result: ApiResult<T>) -> S
+        flow: StateFlow<ApiResult<T>>
     ) {
         viewModelScope.launch {
             mapperAndUsecase.collect { result ->
-                _state.value = updateState(_state.value, result)
+                updateState(flow, result)
             }
         }
+    }
+
+    fun <T> updateState(stateFlow: StateFlow<T>, newValue: T) {
+        (stateFlow as MutableStateFlow).value = newValue
     }
 }

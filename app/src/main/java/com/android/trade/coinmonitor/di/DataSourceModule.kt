@@ -1,7 +1,7 @@
 package com.android.trade.coinmonitor.di
 
-import com.android.trade.data.local.datasource.LocalDataSource
-import com.android.trade.data.local.datasource.LocalDataSourceImpl
+import com.android.trade.data.local.datasource.RoomDataSource
+import com.android.trade.data.local.datasource.impl.RoomDataSourceImpl
 import com.android.trade.data.remote.datasource.CoinDataSource
 import com.android.trade.data.remote.datasource.impl.CoinDataSourceImpl
 import dagger.Binds
@@ -21,7 +21,7 @@ abstract class DataSourceModule {
 
     @Binds
     @Singleton
-    abstract fun bindLocalDataSource(
-        localDataSourceImpl: LocalDataSourceImpl
-    ): LocalDataSource
+    abstract fun bindRoomDataSource(
+        roomDataSourceImpl: RoomDataSourceImpl
+    ): RoomDataSource
 }
