@@ -1,11 +1,10 @@
 package com.android.trade.presentation.ui.main.fragment
 
-import android.view.View
 import android.os.Build
+import android.view.View
 import android.view.WindowMetrics
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.models.CoinInfo
 import com.android.trade.presentation.adapter.CoinInfoAdapter
@@ -14,11 +13,11 @@ import com.android.trade.presentation.ui.base.BaseFragment
 import com.android.trade.presentation.ui.main.fragment.dialog.CoinExcahngeBottomSheetDialog
 import com.android.trade.presentation.ui.main.fragment.dialog.CoinNameBottomSheetDialog
 import com.android.trade.presentation.viewmodels.CoinViewModel
+import com.android.trade.presentation.viewmodels.RoomAndWebSocketViewModel
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.android.trade.presentation.viewmodels.RoomAndWebSocketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

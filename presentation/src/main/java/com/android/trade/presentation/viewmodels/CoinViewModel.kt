@@ -1,6 +1,6 @@
 package com.android.trade.presentation.viewmodels
 
-import com.android.trade.common.utils.logMessage
+import com.android.trade.common.enum.MarketType
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.usecase.GetBinanceMarketUseCase
 import com.android.trade.domain.usecase.GetBithumbMarketUseCase
@@ -21,12 +21,13 @@ class CoinViewModel @Inject constructor(
 ): BaseViewModel<UpbitMarketViewState>(UpbitMarketViewState()) {
 
     fun fetchMarket(market : String) {
-        when(market){
-            "Upbit"->fetchData(mapper.domainToUIMarket(getUpbitMarketUseCase(), market), _state.marketState )
-            "Bithumb"->fetchData(mapper.domainToUIMarket(getBithumbMarketUseCase(), market), _state.marketState )
-            "Binance"->fetchData(mapper.domainToUIMarket(getBinanceMarketUseCase(), market), _state.marketState )
-            "Bybit"->fetchData(mapper.domainToUIMarket(getBybitMarketUseCase(), market), _state.marketState )
+        val flow = when(market){
+            MarketType.UPBIT.id->getUpbitMarketUseCase()
+            MarketType.BITHUMB.id->getBithumbMarketUseCase()
+            MarketType.BINANCE.id->getBinanceMarketUseCase()
+            else->getBybitMarketUseCase()
         }
+        fetchData(mapper.domainToUIMarket(flow, market), _state.marketState )
     }
 
     fun resetState(){

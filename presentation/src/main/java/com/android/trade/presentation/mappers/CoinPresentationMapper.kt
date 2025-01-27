@@ -2,6 +2,7 @@ package com.android.trade.presentation.mappers
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.android.trade.common.enum.MarketType
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.mappers.BaseMapper
 import com.android.trade.domain.models.Market
@@ -14,26 +15,30 @@ import javax.inject.Inject
 class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapper() {
     fun domainToUIMarket(flow: Flow<ApiResult<Market>>, market : String): Flow<ApiResult<MarketUiModel>> {
         return apiResultMapper(flow) {
-            val model = MarketUiModel(
-                market = market,
-                items = ArrayList(
-                    it.filter { item ->
-                        when(market){
-                            "Upbit","Bithumb"->item.market.contains("KRW")
-                            "Binance","Bybit" -> item.market.endsWith("USDT")
-                            else -> {false}
-                        }
-
-                    }.map { item ->
-                        MarketUiModel.Item(
-                            code = item.market,
-                            name = item.english_name
-                        )
-                    }
+            val itemFilter: (Market.Item) -> Boolean
+            val coinNameMapper: (Market.Item) -> String
+            when (market) {
+                MarketType.UPBIT.id, MarketType.BITHUMB.id -> {
+                    itemFilter = { it.market.contains("KRW") }
+                    coinNameMapper = { "${it.englishName}(${it.koreanName})" }
+                }
+                MarketType.BINANCE.id, MarketType.BYBIT.id -> {
+                    itemFilter = { it.market.endsWith("USDT") }
+                    coinNameMapper = { it.englishName }
+                }
+                else -> {
+                    itemFilter = { false }
+                    coinNameMapper = { "" }
+                }
+            }
+            val items = it.filter(itemFilter).map { item ->
+                MarketUiModel.Item(
+                    code = item.market,
+                    name = coinNameMapper(item)
                 )
-            )
+            }.toMutableList()
 
-            ApiResult.Success(model)
+            ApiResult.Success(MarketUiModel(market = market, items = items))
         }
     }
 
@@ -41,8 +46,8 @@ class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapp
     fun domainToUIPrice(webSocketData: WebSocketData): WebSocketData {
         val price = webSocketData.price?.toDoubleOrNull()?.let {
             when (webSocketData.market) {
-                "Upbit", "Bithumb" -> context.getString(R.string.won, it)
-                "Binance", "Bybit" -> context.getString(R.string.dollor, it)
+                MarketType.UPBIT.id, MarketType.BITHUMB.id -> context.getString(R.string.won, it)
+                MarketType.BINANCE.id, MarketType.BYBIT.id -> context.getString(R.string.dollor, it)
                 else -> ""
             }
         } ?: ""

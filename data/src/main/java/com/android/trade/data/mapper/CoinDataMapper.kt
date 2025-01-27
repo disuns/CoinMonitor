@@ -47,7 +47,8 @@ class CoinDataMapper @Inject constructor() : BaseMapper() {
             it.map { item ->
                 Market.Item(
                     market = item.market,
-                    english_name = item.english_name
+                    englishName = item.english_name,
+                    koreanName = item.korean_name
                 )
             }
         }
@@ -58,7 +59,8 @@ class CoinDataMapper @Inject constructor() : BaseMapper() {
             it.symbols.map { item ->
                 Market.Item(
                     market = item.symbol,
-                    english_name = item.baseAsset
+                    englishName = item.baseAsset,
+                    koreanName = ""
                 )
             }
         }
@@ -69,7 +71,8 @@ class CoinDataMapper @Inject constructor() : BaseMapper() {
             it.result.list.sortedByDescending { it.lastPrice.toDouble() }.map { item ->
                 Market.Item(
                     market = item.symbol,
-                    english_name = item.symbol
+                    englishName = item.symbol,
+                    koreanName = ""
                 )
             }
         }

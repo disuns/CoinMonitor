@@ -1,17 +1,15 @@
 package com.android.trade.data.manager
 
+import com.android.trade.common.enum.MarketType
 import com.android.trade.common.utils.WEBSOCKET_BITHUMB
 import com.android.trade.common.utils.WEBSOCKET_BYBIT
 import com.android.trade.common.utils.WEBSOCKET_UPBIT
-import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.WebSocketManager
 import com.android.trade.domain.models.WebSocketData
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -30,17 +28,14 @@ class WebSocketManagerImpl @Inject constructor(
     private var listener: ((WebSocketData?) -> Unit)? = null
 
     override fun connect(market: String): Boolean {
-        if (webSockets.size > 3) {
-            return false
-        }
-        if (webSockets.containsKey(market)) {
+        if (webSockets.size > 3 || webSockets.containsKey(market)) {
             return false
         }
 
         val url = when(market){
-            "Upbit"-> WEBSOCKET_UPBIT
-            "Bithumb"-> WEBSOCKET_BITHUMB
-            "Bybit"-> WEBSOCKET_BYBIT
+            MarketType.UPBIT.id->WEBSOCKET_UPBIT
+            MarketType.BITHUMB.id->WEBSOCKET_BITHUMB
+            MarketType.BYBIT.id->WEBSOCKET_BYBIT
             else -> ""
         }
 
@@ -60,12 +55,48 @@ class WebSocketManagerImpl @Inject constructor(
     }
 
     override fun sendMessage(market: String, codes: List<String>) {
-        val gson = Gson()
         val message = when(market){
-            "Upbit"->{
-                val jsonArray = JsonArray()
-                codes.forEach { jsonArray.add(it) }
+            MarketType.UPBIT.id->{
+                sendMessageJson(market, codes)
+            }
+            MarketType.BITHUMB.id->{
+                sendMessageJson(market, codes)
+            }
+            MarketType.BINANCE.id->{
+                disconnect(market)
+                val streams = codes.joinToString("/") { "${it.lowercase()}@trade" }
+                val request = Request.Builder()
+                    .url("wss://stream.binance.com:9443/stream?streams=$streams")
+                    .build()
+                val webSocket = okHttpClient.newWebSocket(request, webSocketListener)
+                webSockets[market] = webSocket
+                ""
+            }
+            MarketType.BYBIT.id->{
+                sendMessageJson(market, codes)
+            }
+            else -> ""
+        }
 
+        if(message.isNotBlank())
+            webSockets[market]?.send(message)
+    }
+
+    fun sendMessageJson(market: String, codes: List<String>): String {
+        val gson = Gson()
+
+        val jsonArray = JsonArray()
+        codes.forEach { code ->
+            val newCode = when(market){
+                MarketType.BITHUMB.id->code.split("-").reversed().joinToString("_")
+                MarketType.BYBIT.id->"tickers.$code"
+                else -> code
+            }
+            jsonArray.add(newCode)
+        }
+
+        return when(market){
+            MarketType.UPBIT.id->{
                 gson.toJson(
                     listOf(
                         mapOf("ticket" to "unique_ticket"),
@@ -76,13 +107,7 @@ class WebSocketManagerImpl @Inject constructor(
                     )
                 )
             }
-            "Bithumb"->{
-                val jsonArray = JsonArray()
-                codes.forEach { code ->
-                    val newCode = code.split("-").reversed().joinToString("_")
-                    jsonArray.add(newCode)
-                }
-
+            MarketType.BITHUMB.id->{
                 gson.toJson(
                     mapOf(
                         "type" to "ticker",
@@ -91,22 +116,7 @@ class WebSocketManagerImpl @Inject constructor(
                     )
                 )
             }
-            "Binance"->{
-                disconnect(market)
-                val streams = codes.joinToString("/") { "${it.lowercase()}@trade" }
-                val request = Request.Builder()
-                    .url("wss://stream.binance.com:9443/stream?streams=$streams")
-                    .build()
-                val webSocket = okHttpClient.newWebSocket(request, webSocketListener)
-                webSockets[market] = webSocket
-                ""
-            }
-            "Bybit"->{
-                val jsonArray = JsonArray()
-                codes.forEach { code ->
-                    jsonArray.add("tickers.$code")
-                }
-
+            MarketType.BYBIT.id->{
                 gson.toJson(
                     mapOf(
                         "op" to "subscribe",
@@ -114,13 +124,9 @@ class WebSocketManagerImpl @Inject constructor(
                     )
                 )
             }
+
             else -> ""
         }
-
-        logMessage(message)
-//        logMessage(webSockets[market])
-        if(message.isNotBlank())
-            webSockets[market]?.send(message)
     }
 
     override fun disconnectAll() {
@@ -140,26 +146,16 @@ class WebSocketManagerImpl @Inject constructor(
         override fun onMessage(webSocket: WebSocket, text: String) {
             val key = webSockets.entries.firstOrNull { it.value == webSocket }?.key
             when(key){
-                "Bithumb"->{
-                    logMessage(getBithumbTradePrice(key, text))
-                    listener?.invoke(getBithumbTradePrice(key, text))
-                }
-                "Binance"->{
-                    logMessage(getBinanceTradePrice(key, text))
-                    listener?.invoke(getBinanceTradePrice(key, text))
-                }
-                "Bybit"->{
-                    logMessage(getBybitTradePrice(key, text))
-                    listener?.invoke(getBybitTradePrice(key, text))
-                }
+                MarketType.BITHUMB.id->  listener?.invoke(getBithumbTradePrice(key, text))
+                MarketType.BINANCE.id->listener?.invoke(getBinanceTradePrice(key, text))
+                MarketType.BYBIT.id->listener?.invoke(getBybitTradePrice(key, text))
             }
         }
 
         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
             val key = webSockets.entries.firstOrNull { it.value == webSocket }?.key
             when(key){
-                "Upbit"->{
-                    logMessage(getUpbitTradePrice(key, bytes))
+                MarketType.UPBIT.id->{
                     listener?.invoke(getUpbitTradePrice(key, bytes))
                 }
             }
@@ -171,7 +167,11 @@ class WebSocketManagerImpl @Inject constructor(
     }
 }
 
-private fun getTradePrice(market : String?, text: String?, byteString: ByteString?, onParsing : (JsonObject)->WebSocketData?): WebSocketData?{
+private fun getTradePrice(
+    text: String?,
+    byteString: ByteString?,
+    onParsing: (JsonObject) -> WebSocketData?
+): WebSocketData?{
     return try {
         val jsonString = text ?: byteString?.utf8()
         val jsonObject = JsonParser.parseString(jsonString).asJsonObject
@@ -183,13 +183,13 @@ private fun getTradePrice(market : String?, text: String?, byteString: ByteStrin
 }
 
 private fun getUpbitTradePrice(market : String?, byteString: ByteString): WebSocketData? {
-    return getTradePrice(market, null, byteString ){ jsonObject ->
+    return getTradePrice(null, byteString){ jsonObject ->
         WebSocketData(market,jsonObject["code"]?.asString,jsonObject["trade_price"]?.asString)
     }
 }
 
 private fun getBithumbTradePrice(market : String?, text: String): WebSocketData? {
-    return getTradePrice(market, text, null ){ jsonObject ->
+    return getTradePrice(text, null){ jsonObject ->
         val data = jsonObject.getAsJsonObject("content")
         val symbol = data?.get("symbol")?.asString ?: ""
         val closePrice = data?.get("closePrice")?.asString ?: ""
@@ -200,14 +200,14 @@ private fun getBithumbTradePrice(market : String?, text: String): WebSocketData?
 }
 
 private fun getBybitTradePrice(market : String?, text: String): WebSocketData? {
-    return getTradePrice(market, text, null ){ jsonObject ->
+    return getTradePrice(text, null){ jsonObject ->
         val data = jsonObject.getAsJsonObject("data")
         WebSocketData(market,data["symbol"]?.asString,data["lastPrice"]?.asString)
     }
 }
 
 private fun getBinanceTradePrice(market : String?, text: String): WebSocketData? {
-    return getTradePrice(market, text, null ){ jsonObject ->
+    return getTradePrice(text, null){ jsonObject ->
         val data = jsonObject.getAsJsonObject("data")
         WebSocketData(market,data["s"]?.asString,data["p"]?.asString)
     }

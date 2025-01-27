@@ -2,8 +2,8 @@ package com.android.trade.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.trade.presentation.models.state.BaseViewState
 import com.android.trade.domain.ApiResult
+import com.android.trade.presentation.models.state.BaseViewState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,7 +1,7 @@
 package com.android.trade.presentation.ui.main.fragment.dialog
 
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.trade.presentation.R
+import com.android.trade.common.enum.MarketType
 import com.android.trade.presentation.adapter.CoinExchangeAdapter
 import com.android.trade.presentation.databinding.BottomSheetCoinExchangeBinding
 import com.android.trade.presentation.ui.base.BaseBottomSheetDialog
@@ -23,7 +23,7 @@ class CoinExcahngeBottomSheetDialog @Inject constructor(
             (dialog as? BottomSheetDialog)?.behavior?.apply {
                 isDraggable = false
             }
-            val buttonText = resources.getStringArray(R.array.exchange).toMutableList()
+            val buttonText = MarketType.entries.map { it.id }.toMutableList()
             val adapter = CoinExchangeAdapter(buttonText) { itemText->
                 onClick(itemText)
                 dismiss()
