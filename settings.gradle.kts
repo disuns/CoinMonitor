@@ -21,4 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "CoinMonitor"
 include(":app")
- 
+include(":common")
+include(":data")
+include(":presentation")
+include(":domain")
