@@ -5,7 +5,9 @@ import android.content.Context
 import com.android.trade.common.enum.MarketType
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.mappers.BaseMapper
+import com.android.trade.domain.models.CoinInfo
 import com.android.trade.domain.models.Market
+import com.android.trade.domain.models.Ticker
 import com.android.trade.domain.models.WebSocketData
 import com.android.trade.presentation.R
 import com.android.trade.presentation.models.MarketUiModel
@@ -13,7 +15,50 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapper() {
-    fun domainToUIMarket(flow: Flow<ApiResult<Market>>, market : String): Flow<ApiResult<MarketUiModel>> {
+    fun domainToUIMarket(coinList: List<CoinInfo?>): MarketUiModel? {
+        val firstItem = coinList.firstOrNull() ?: return null
+
+        val items = coinList.mapNotNull { item ->
+            item?.let {
+                MarketUiModel.Item(
+                    code = it.code,
+                    name = item.coinName
+                )
+            }
+        }.toMutableList()
+
+        return MarketUiModel(market = firstItem.market, items = items)
+    }
+
+    @SuppressLint("StringFormatMatches")
+    fun domainToUIPrice(webSocketData: WebSocketData): WebSocketData {
+        val price = webSocketData.price?.toDoubleOrNull()?.let {
+            when (webSocketData.market) {
+                MarketType.UPBIT.id, MarketType.BITHUMB.id -> context.getString(R.string.won, it)
+                MarketType.BINANCE.id, MarketType.BYBIT.id -> context.getString(R.string.dollor, it)
+                else -> ""
+            }
+        } ?: ""
+
+        return WebSocketData(
+            market = webSocketData.market,
+            code = webSocketData.code,
+            price = price
+        )
+    }
+
+    @SuppressLint("StringFormatMatches")
+    fun domainToUIPrice(market : String,price: String): String {
+        return price.toDoubleOrNull()?.let {
+            when (market) {
+                MarketType.UPBIT.id, MarketType.BITHUMB.id -> context.getString(R.string.won, it)
+                MarketType.BINANCE.id, MarketType.BYBIT.id -> context.getString(R.string.dollor, it)
+                else -> ""
+            }
+        } ?: ""
+    }
+
+    fun domainToCoinInfo(flow: Flow<ApiResult<Market>>, market : String): Flow<ApiResult<List<CoinInfo>>> {
         return apiResultMapper(flow) {
             val itemFilter: (Market.Item) -> Boolean
             val coinNameMapper: (Market.Item) -> String
@@ -32,30 +77,14 @@ class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapp
                 }
             }
             val items = it.filter(itemFilter).map { item ->
-                MarketUiModel.Item(
+                CoinInfo(
+                    market = market,
                     code = item.market,
-                    name = coinNameMapper(item)
+                    coinName = coinNameMapper(item)
                 )
-            }.toMutableList()
-
-            ApiResult.Success(MarketUiModel(market = market, items = items))
-        }
-    }
-
-    @SuppressLint("StringFormatMatches")
-    fun domainToUIPrice(webSocketData: WebSocketData): WebSocketData {
-        val price = webSocketData.price?.toDoubleOrNull()?.let {
-            when (webSocketData.market) {
-                MarketType.UPBIT.id, MarketType.BITHUMB.id -> context.getString(R.string.won, it)
-                MarketType.BINANCE.id, MarketType.BYBIT.id -> context.getString(R.string.dollor, it)
-                else -> ""
             }
-        } ?: ""
 
-        return WebSocketData(
-            market = webSocketData.market,
-            code = webSocketData.code,
-            price = price
-        )
+            ApiResult.Success(items)
+        }
     }
 }

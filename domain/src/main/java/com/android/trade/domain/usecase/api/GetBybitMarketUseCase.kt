@@ -1,4 +1,4 @@
-package com.android.trade.domain.usecase
+package com.android.trade.domain.usecase.api
 
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.models.Market
