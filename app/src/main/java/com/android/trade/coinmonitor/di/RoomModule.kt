@@ -3,6 +3,7 @@ package com.android.trade.coinmonitor.di
 import android.content.Context
 import androidx.room.Room
 import com.android.trade.data.local.dao.CoinDao
+import com.android.trade.data.local.dao.MarketDao
 import com.android.trade.data.local.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -27,7 +28,13 @@ object RoomModule {
 
     @Singleton
     @Provides
-    fun provideNoteDAO(noteDB: AppDatabase): CoinDao {
-        return noteDB.coinDao()
+    fun provideCoinDao(appDatabase: AppDatabase): CoinDao {
+        return appDatabase.coinDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMarketDao(appDatabase: AppDatabase): MarketDao {
+        return appDatabase.marketDao()
     }
 }

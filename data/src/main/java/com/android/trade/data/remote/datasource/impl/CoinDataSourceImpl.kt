@@ -22,4 +22,9 @@ class CoinDataSourceImpl  @Inject constructor(
     override fun fetchBithumbMarket() = safeFlow { bithumbService.fetchBithumbMarket() }
     override fun fetchBinanceMarket() = safeFlow { binanceService.fetchBinanceMarket() }
     override fun fetchBybitMarket() = safeFlow { bybitService.fetchBybitMarket() }
+
+    override fun fetchUpbitTicker(markets : String) = safeFlow { upbitService.fetchUpbitTicker(markets) }
+    override fun fetchBithumbTicker(markets : String) = safeFlow { bithumbService.fetchBithumbTicker(markets) }
+    override fun fetchBinanceTicker(symbols : String) = safeFlow { binanceService.fetchBinanceTicker(symbols) }
+    override fun fetchBybitTicker(symbol : String) = safeFlow { bybitService.fetchBybitMarket(symbol) }
 }

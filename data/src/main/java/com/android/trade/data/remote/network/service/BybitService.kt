@@ -7,5 +7,5 @@ import retrofit2.http.Query
 
 interface BybitService {
     @GET("v5/market/tickers")
-    suspend fun fetchBybitMarket(@Query("category") category : String = "spot"): Response<BybitResponse>
+    suspend fun fetchBybitMarket(@Query("symbol") symbol : String = "", @Query("category") category : String = "spot"): Response<BybitResponse>
 }

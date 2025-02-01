@@ -1,10 +1,12 @@
 package com.android.trade.presentation.ui.main.fragment
 
-import android.view.View
 import android.os.Build
+import android.view.View
 import android.view.WindowMetrics
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.trade.common.enum.MarketType
 import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.models.CoinInfo
@@ -14,12 +16,13 @@ import com.android.trade.presentation.ui.base.BaseFragment
 import com.android.trade.presentation.ui.main.fragment.dialog.CoinExcahngeBottomSheetDialog
 import com.android.trade.presentation.ui.main.fragment.dialog.CoinNameBottomSheetDialog
 import com.android.trade.presentation.viewmodels.CoinViewModel
+import com.android.trade.presentation.viewmodels.RoomAndWebSocketViewModel
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.android.trade.presentation.viewmodels.RoomAndWebSocketViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
@@ -48,8 +51,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     override fun setupView() {
         bind {
             setAndPlayAdMob()
+            coinViewModel.fetchMarketSequentially(MarketType.entries.map { it.id }, roomAndWebSocketViewModel)
 
-            roomAndWebSocketViewModel.getAllCoin()
             adapter = CoinInfoAdapter(coins){position->
                 roomAndWebSocketViewModel.deleteCoin(coins[position])
             }
@@ -58,8 +61,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
 
             btnGetMarket.setOnClickListener {
                 val bottomSheet = CoinExcahngeBottomSheetDialog { itemText ->
-                    roomAndWebSocketViewModel.getAllCoin()
-                    coinViewModel.fetchMarket(itemText)
+                    coinNameBottomSheetDialog(itemText)
                 }
                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
             }
@@ -68,52 +70,32 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
 
     private fun handleState(){
-        collectState(coinViewModel.state.marketState){ uiState->
-            when(uiState){
-                is ApiResult.Success -> {
-                    if(uiState.value.items.size > 0) {
-                        val bottomSheet = CoinNameBottomSheetDialog(uiState.value){code, coin ->
-                            roomAndWebSocketViewModel.insertCoin(CoinInfo(uiState.value.market, code, coin))
-                            coinViewModel.resetState()
-                        }
-                        bottomSheet.show(parentFragmentManager, bottomSheet.tag)
-                    }
-                }
-                is ApiResult.Error -> {}
-                is ApiResult.Loading -> {}
-                is ApiResult.Empty -> {}
-            }
-        }
-
         collectState(roomAndWebSocketViewModel.state.coinsListState){ uiState->
             if (uiState != coins) {
-                coins = uiState.toMutableList()
-                adapter.updateList(coins)
-                coins.forEach {
-                    roomAndWebSocketViewModel.connectWebSocket(it.market)
-                }
-                bind {
-                    btnGetMarket.visibility = if(coins.size >=3) View.GONE
-                    else View.VISIBLE
+                coinViewModel.fetchTicker(uiState.toMutableList(), roomAndWebSocketViewModel){
+                    coins = uiState.toMutableList()
+
+                    adapter.updateList(coins)
+                    coins.forEach {
+                        roomAndWebSocketViewModel.connectWebSocket(it.market)
+                    }
+                    bind {
+                        btnGetMarket.visibility = if(coins.size >=3) View.GONE
+                        else View.VISIBLE
+                    }
                 }
             }
         }
 
         roomAndWebSocketViewModel.messages.observe(viewLifecycleOwner){message ->
 //            logMessage(message)
-            when(message){
-                null->{
-                    roomAndWebSocketViewModel.sendAllMessage()
-                }
-                else-> {
-                    adapter.updatePrice(message)
-                }
-            }
+            adapter.updatePrice(message)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        roomAndWebSocketViewModel.deleteCoinList()
         roomAndWebSocketViewModel.disconnectAll()
     }
 
@@ -132,6 +114,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             adViewContainer.apply {
                 removeAllViews()
                 addView(adView)
+            }
+        }
+    }
+
+    private fun coinNameBottomSheetDialog(market : String ){
+        lifecycleScope.launch {
+            roomAndWebSocketViewModel.getCoinList(market)?.let { item->
+                val bottomSheet = CoinNameBottomSheetDialog(item){code, coin ->
+                    roomAndWebSocketViewModel.insertCoin(CoinInfo(item.market, code, coin))
+                }
+                bottomSheet.show(parentFragmentManager, bottomSheet.tag)
             }
         }
     }
