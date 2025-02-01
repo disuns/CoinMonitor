@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.di
+package com.coin.trade.coinmonitor.di
 
 import android.content.Context
 import androidx.room.Room

@@ -1,6 +1,6 @@
-package com.android.trade.coinmonitor.di
+package com.coin.trade.coinmonitor.di
 
-import com.android.trade.coinmonitor.BuildConfig
+import com.coin.trade.coinmonitor.BuildConfig
 import com.android.trade.common.utils.API_BINANCE
 import com.android.trade.common.utils.API_BITHUMB
 import com.android.trade.common.utils.API_BYBIT

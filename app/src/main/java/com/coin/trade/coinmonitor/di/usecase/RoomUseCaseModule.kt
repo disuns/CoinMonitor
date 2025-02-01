@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.di.usecase
+package com.coin.trade.coinmonitor.di.usecase
 
 import com.android.trade.domain.repositories.RoomRepository
 import com.android.trade.domain.usecase.room.GetCoinListUseCase

@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.app
+package com.coin.trade.coinmonitor.app
 
 import android.app.Application
 import com.android.trade.common.LoggerInitializer

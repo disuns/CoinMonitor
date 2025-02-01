@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.di
+package com.coin.trade.coinmonitor.di
 
 import com.android.trade.data.implementations.CoinRepositoryImpl
 import com.android.trade.data.implementations.RoomRepositoryImpl

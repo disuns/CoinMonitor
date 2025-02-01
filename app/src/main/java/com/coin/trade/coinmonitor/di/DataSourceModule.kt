@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.di
+package com.coin.trade.coinmonitor.di
 
 import com.android.trade.data.local.datasource.RoomDataSource
 import com.android.trade.data.local.datasource.impl.RoomDataSourceImpl

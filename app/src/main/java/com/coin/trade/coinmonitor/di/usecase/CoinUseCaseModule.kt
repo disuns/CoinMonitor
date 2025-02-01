@@ -1,4 +1,4 @@
-package com.android.trade.coinmonitor.di.usecase
+package com.coin.trade.coinmonitor.di.usecase
 
 import com.android.trade.domain.repositories.CoinRepository
 import com.android.trade.domain.usecase.api.GetBinanceMarketUseCase
