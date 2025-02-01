@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.android.trade.coinmonitor"
+    namespace = "com.trade.coinmonitor"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.android.trade.coinmonitor"
+        applicationId = "com.trade.coinmonitor"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
