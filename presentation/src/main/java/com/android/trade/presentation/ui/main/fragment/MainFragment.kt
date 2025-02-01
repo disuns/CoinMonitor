@@ -5,7 +5,6 @@ import android.os.Build
 import android.view.WindowMetrics
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.models.CoinInfo
 import com.android.trade.presentation.adapter.CoinInfoAdapter

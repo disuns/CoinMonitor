@@ -20,8 +20,22 @@ abstract class BaseBottomSheetDialog<VB : ViewBinding>(
     override fun onStart() {
         super.onStart()
 
-        val behavior = BottomSheetBehavior.from(requireView().parent as View)
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        val bottomSheetView = requireView().parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheetView)
+
+        // 바텀시트의 내용물 높이를 계산
+        val contentView = binding.root // 바텀시트에 있는 콘텐츠의 루트 뷰
+        contentView.post {
+            val contentHeight = contentView.height // 콘텐츠 높이 계산
+            val maxPeekHeight = (resources.displayMetrics.heightPixels * 0.5).toInt() // 화면의 절반 크기
+
+            // 콘텐츠 높이가 화면 절반보다 작으면 콘텐츠 크기만큼 표시
+            // 그렇지 않으면 화면 절반만큼 표시
+            behavior.peekHeight = if (contentHeight < maxPeekHeight) contentHeight else maxPeekHeight
+
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            behavior.isFitToContents = false // 콘텐츠 크기에 맞추지 않도록 설정
+        }
     }
 
     override fun onCreateView(
@@ -36,6 +50,9 @@ abstract class BaseBottomSheetDialog<VB : ViewBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
+
+        // 바깥 영역 클릭 시 닫히도록 설정
+        dialog?.setCancelable(true)
     }
 
     override fun onDestroyView() {
