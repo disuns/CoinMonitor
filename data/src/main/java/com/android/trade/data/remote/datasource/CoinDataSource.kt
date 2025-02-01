@@ -3,7 +3,6 @@ package com.android.trade.data.remote.datasource
 import com.android.trade.data.remote.response.BinanaceTickerResponse
 import com.android.trade.data.remote.response.BinanceResponse
 import com.android.trade.data.remote.response.BybitResponse
-import com.android.trade.data.remote.response.BybitTickerResponse
 import com.android.trade.data.remote.response.MarketResponse
 import com.android.trade.data.remote.response.MarketTickerResponse
 import com.android.trade.domain.ApiResult
