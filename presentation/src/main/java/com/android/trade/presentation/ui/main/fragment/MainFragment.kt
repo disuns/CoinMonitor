@@ -112,7 +112,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         bind {
             val adView = AdView(requireActivity()).apply {
                 adUnitId =
-                    "ca-app-pub-3940256099942544/6300978111" // 실제 ID : ca-app-pub-1122670623771851/3536074882
+                    "ca-app-pub-1122670623771851/3536074882" // 실제 ID : ca-app-pub-1122670623771851/3536074882, 테스트 ID : ca-app-pub-3940256099942544/6300978111
                 setAdSize(mAdSize)
                 loadAd(AdRequest.Builder().build())
             }

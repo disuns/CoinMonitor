@@ -7,8 +7,9 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-1122670623771851~3657426017"/>
 <!--       실제 ID: ca-app-pub-1122670623771851~3657426017-->
+<!--       테스트 ID: ca-app-pub-3940256099942544~3347511713-->
 
         <activity
             android:name=".ui.splash.SplashActivity"
