@@ -9,8 +9,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 abstract class BaseBottomSheetDialog<VB : ViewBinding>(
-    private val inflateBinding : (LayoutInflater, ViewGroup?, Boolean) -> VB
-): BottomSheetDialogFragment() {
+    private val inflateBinding: (LayoutInflater, ViewGroup?, Boolean) -> VB
+) : BottomSheetDialogFragment() {
 
     private var _binding: VB? = null
     private val binding get() = _binding!!
@@ -31,7 +31,8 @@ abstract class BaseBottomSheetDialog<VB : ViewBinding>(
 
             // 콘텐츠 높이가 화면 절반보다 작으면 콘텐츠 크기만큼 표시
             // 그렇지 않으면 화면 절반만큼 표시
-            behavior.peekHeight = if (contentHeight < maxPeekHeight) contentHeight else maxPeekHeight
+            behavior.peekHeight =
+                if (contentHeight < maxPeekHeight) contentHeight else maxPeekHeight
 
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             behavior.isFitToContents = false // 콘텐츠 크기에 맞추지 않도록 설정
@@ -43,7 +44,7 @@ abstract class BaseBottomSheetDialog<VB : ViewBinding>(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = inflateBinding(inflater,container, false)
+        _binding = inflateBinding(inflater, container, false)
         return binding.root
     }
 

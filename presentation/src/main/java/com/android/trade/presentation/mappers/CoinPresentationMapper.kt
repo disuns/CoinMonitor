@@ -62,13 +62,11 @@ class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapp
 
     @SuppressLint("StringFormatMatches")
     fun domainToUIPrice(market : String,price: String): String {
-        return price.toDoubleOrNull()?.let {
-            when (market) {
-                MarketType.UPBIT.id, MarketType.BITHUMB.id -> context.getString(R.string.won, it)
-                MarketType.BINANCE.id, MarketType.BYBIT.id -> context.getString(R.string.dollor, it)
-                else -> ""
-            }
-        } ?: ""
+        return when (market) {
+            MarketType.UPBIT.id, MarketType.BITHUMB.id -> context.getString(R.string.won, price.formatWithComma())
+            MarketType.BINANCE.id, MarketType.BYBIT.id -> context.getString(R.string.dollor, price.formatWithComma())
+            else -> ""
+        }
     }
 
     fun domainToCoinInfo(flow: Flow<ApiResult<Market>>, market : String): Flow<ApiResult<List<CoinInfo>>> {
