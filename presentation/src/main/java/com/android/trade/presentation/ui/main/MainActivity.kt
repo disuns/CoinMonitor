@@ -58,6 +58,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
     }
 
     private fun setAppTheme(isDarkMode: Boolean) {
+        binding.btnDarkMode.text = if (isDarkMode) "Light" else "Dark"
         val mode = if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(mode)
     }
