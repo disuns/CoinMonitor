@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">CoinMonitor</string>
 
-    <string name="dollor">\$%.3f</string>
-    <string name="won">₩%.0f</string>
+    <string name="dollor">\$%s</string>
+    <string name="won">₩%s</string>
 
     <string-array name="exchange">
         <item>Upbit</item>

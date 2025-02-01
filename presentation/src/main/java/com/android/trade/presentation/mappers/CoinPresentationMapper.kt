@@ -9,6 +9,8 @@ import com.android.trade.domain.models.WebSocketData
 import com.android.trade.presentation.R
 import com.android.trade.presentation.models.MarketUiModel
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapper() {
@@ -39,10 +41,11 @@ class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapp
 
     @SuppressLint("StringFormatMatches")
     fun domainToUIPrice(webSocketData: WebSocketData): WebSocketData {
-        val price = webSocketData.price?.toDoubleOrNull()?.let {
+
+        val price = webSocketData.price?.let {
             when (webSocketData.market) {
-                "Upbit", "Bithumb" -> context.getString(R.string.won, it)
-                "Binance", "Bybit" -> context.getString(R.string.dollor, it)
+                "Upbit", "Bithumb" -> context.getString(R.string.won, it.formatWithComma())
+                "Binance", "Bybit" -> context.getString(R.string.dollor, it.formatWithComma())
                 else -> ""
             }
         } ?: ""
@@ -53,4 +56,15 @@ class CoinPresentationMapper @Inject constructor(val context: Context): BaseMapp
             price = price
         )
     }
+
+    private fun String.formatWithComma(): String {
+        if (this.isBlank()) return "0"
+
+        val bigDecimal = BigDecimal(this) // 문자열을 BigDecimal로 변환
+        val integerPart = DecimalFormat("#,###").format(bigDecimal.toBigInteger()) // 정수 부분 쉼표 추가
+        val decimalPart = bigDecimal.stripTrailingZeros().toPlainString().split(".").getOrNull(1) // 불필요한 0 제거
+
+        return if (decimalPart != null) "$integerPart.$decimalPart" else integerPart // 소수점 이하가 있으면 유지
+    }
+
 }
