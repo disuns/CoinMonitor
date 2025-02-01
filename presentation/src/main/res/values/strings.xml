@@ -3,11 +3,4 @@
 
     <string name="dollor">\$%s</string>
     <string name="won">₩%s</string>
-
-    <string-array name="exchange">
-        <item>Upbit</item>
-        <item>Bithumb</item>
-        <item>Binance</item>
-        <item>Bybit</item>
-    </string-array>
 </resources>

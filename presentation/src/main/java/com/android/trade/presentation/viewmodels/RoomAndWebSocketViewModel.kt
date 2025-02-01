@@ -7,21 +7,18 @@ import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.WebSocketManager
 import com.android.trade.domain.models.CoinInfo
 import com.android.trade.domain.models.WebSocketData
-import com.android.trade.domain.usecase.room.GetRoomAllCoinUseCase
-import com.android.trade.domain.usecase.room.RoomDeleteCoinUseCase
-import com.android.trade.domain.usecase.room.RoomInsertCoinUseCase
 import com.android.trade.presentation.mappers.CoinPresentationMapper
 import com.android.trade.presentation.models.state.RoomAndWebSocketState
+import com.android.trade.presentation.usecasegroup.RoomCoinListUseCaseGroup
+import com.android.trade.presentation.usecasegroup.RoomCoinUseCaseGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RoomAndWebSocketViewModel @Inject constructor(
-    private val roomInsertCoin: RoomInsertCoinUseCase,
-    private val getRoomAllCoin: GetRoomAllCoinUseCase,
-    private val roomDeleteCoin: RoomDeleteCoinUseCase,
+    private val roomCoinGroup: RoomCoinUseCaseGroup,
+    private val roomCoinListGroup: RoomCoinListUseCaseGroup,
     private val webSocketManager: WebSocketManager,
     private val mapper : CoinPresentationMapper
 ): BaseViewModel<RoomAndWebSocketState>(RoomAndWebSocketState()) {
@@ -32,21 +29,12 @@ class RoomAndWebSocketViewModel @Inject constructor(
         webSocketManager.setWebSocketListener { webSocketData ->
             viewModelScope.launch {
                 webSocketData?.let {data ->
-//                    val updatedList = _state.coinsListState.value.map { coin ->
-//                        if (coin.market == data.market && coin.code == data.code && data.price != null) {
-//                            val coinInfo = mapper.domainToUIPrice(data)
-//                            coin.copy(price = coinInfo.price!!)
-//                        } else {
-//                            coin
-//                        }
-//                    }
-//                    updateState(_state.coinsListState, updatedList)
-
                     _messages.postValue(mapper.domainToUIPrice(webSocketData))
                 }
             }
         }
     }
+
     fun connectWebSocket(market: String) {
         viewModelScope.launch {
             val success = webSocketManager.connect(market)
@@ -64,7 +52,6 @@ class RoomAndWebSocketViewModel @Inject constructor(
 
     fun sendAllMessage(){
         viewModelScope.launch {
-            delay(100)
             val groupedByMarket = _state.coinsListState.value.groupBy { it.market }
             groupedByMarket.forEach { (market, coinInfos) ->
                 val codes = coinInfos.map { it.code }.toMutableList()
@@ -87,46 +74,77 @@ class RoomAndWebSocketViewModel @Inject constructor(
     }
     fun insertCoin(coinInfo: CoinInfo){
         viewModelScope.launch {
-            val insertString = roomInsertCoin(coinInfo)
-            if(insertString.isBlank())logMessage(coinInfo)
-            else logMessage(insertString)
+            roomCoinGroup.insertCoin(coinInfo)
 
-            getAllCoin()
-//            val currentList = _state.coinsListState.value.toMutableList()
-//            currentList.add(coinInfo)
-//            updateState(_state.coinsListState, currentList)
+            val updatedList = _state.coinsListState.value.toMutableList().apply {
+                add(coinInfo)
+            }
+            updateState(_state.coinsListState, updatedList)
 
-            delay(100)
             val coinList = _state.coinsListState.value.filter { it.market == coinInfo.market }.map { it.code }.toMutableList()
+
+            logMessage(coinList)
             sendMessage(coinInfo.market, coinList)
         }
     }
 
     fun getAllCoin() {
         viewModelScope.launch {
-            updateState(_state.coinsListState, getRoomAllCoin())
+            val newList = roomCoinGroup.getAllCoin()
+            val oldList = _state.coinsListState.value.toMutableList()
+
+            val oldSet = oldList.map { it.market to it.code }.toSet()
+            val newSet = newList.map { it.market to it.code }.toSet()
+
+            val toRemove = oldList.filter { (it.market to it.code) !in newSet }
+
+            val toAdd = newList.filter { (it.market to it.code) !in oldSet }
+
+            if (toRemove.isNotEmpty() || toAdd.isNotEmpty()) {
+                oldList.removeAll(toRemove)
+                oldList.addAll(toAdd)
+                updateState(_state.coinsListState, oldList)
+            }
         }
     }
 
     fun deleteCoin(coinInfo: CoinInfo){
         viewModelScope.launch {
-            roomDeleteCoin(coinInfo.market, coinInfo.code)
-            delay(100)
-            val currentList = _state.coinsListState.value.toMutableList()
-            val itemRemoved = currentList.removeAll { it.market == coinInfo.market && it.code == coinInfo.code }
+            roomCoinGroup.deleteCoin(coinInfo.market, coinInfo.code)
 
-            if (itemRemoved) {
-                updateState(_state.coinsListState, currentList)
+            val updatedList = _state.coinsListState.value.filterNot {
+                it.market == coinInfo.market && it.code == coinInfo.code
+            }
 
-                val exists = _state.coinsListState.value.any { it.market == coinInfo.market }
-                _state.coinsListState.value.groupBy { it.market == coinInfo.market }
-                if(!exists){
+            if (updatedList.size != _state.coinsListState.value.size) {
+                updateState(_state.coinsListState, updatedList)
+
+                val updatedMatching = updatedList.filter { it.market == coinInfo.market }
+
+                if (updatedMatching.isEmpty()) {
                     disconnectWebSocket(coinInfo.market)
-                }else{
-                    val coinList = _state.coinsListState.value.filter { it.market == coinInfo.market }.map { it.code }.toMutableList()
-                    sendMessage(coinInfo.market, coinList)
+                } else {
+                    sendMessage(coinInfo.market, updatedMatching.map { it.code }.toMutableList())
                 }
             }
         }
+    }
+
+    fun insertCoinList(coinList : List<CoinInfo>){
+        viewModelScope.launch {
+            roomCoinListGroup.insertCoinList(coinList)
+        }
+    }
+
+    suspend fun getCoinList(market:String) = mapper.domainToUIMarket(roomCoinListGroup.getCoinList(market))
+
+    fun deleteCoinList(){
+        viewModelScope.launch {
+            roomCoinListGroup.deleteCoinList()
+        }
+    }
+
+    fun updateList(coinList: List<CoinInfo>) {
+        updateState(_state.coinsListState, coinList)
     }
 }
