@@ -1,5 +1,6 @@
 package com.android.trade.presentation.ui.main.fragment.dialog
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.trade.presentation.adapter.CoinNameAdapter
 import com.android.trade.presentation.databinding.BottomSheetCoinNameBinding
@@ -25,6 +26,9 @@ class CoinNameBottomSheetDialog @Inject constructor(
             (dialog as? BottomSheetDialog)?.behavior?.apply {
                 isDraggable = false
             }
+
+
+            Log.d("ssong", "${exchange.items}")
 
             val adapter = CoinNameAdapter(exchange.items) { itemCode, itemCoin->
                 onClick(itemCode, itemCoin)
