@@ -2,6 +2,7 @@ package com.android.trade.presentation.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.android.trade.common.enum.MarketType
+import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.ApiResult
 import com.android.trade.domain.models.CoinInfo
 import com.android.trade.domain.models.Ticker
@@ -24,7 +25,7 @@ class CoinViewModel @Inject constructor(
     private val coinTickerUseCaseGroup: CoinTickerUseCaseGroup,
     private val mapper : CoinPresentationMapper
 ): BaseViewModel<UpbitMarketViewState>(UpbitMarketViewState()) {
-    private fun fetchMarket(market : String): Flow<ApiResult<List<CoinInfo>>> {
+    fun fetchMarket(market : String): Flow<ApiResult<List<CoinInfo>>> {
         val flow = when(market){
             MarketType.UPBIT.id->coinMarketUseCaseGroup.getUpbitMarket()
             MarketType.BITHUMB.id->coinMarketUseCaseGroup.getBithumbMarket()

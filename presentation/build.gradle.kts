@@ -68,4 +68,13 @@ dependencies {
 
     //AdMob
     implementation(libs.play.services.ads)
+
+    //Mockk
+    testImplementation(libs.mockk)
+
+    //Coroutines-Test
+    testImplementation(libs.coroutines.test)
+
+    //turbine
+    testImplementation(libs.turbine)
 }
