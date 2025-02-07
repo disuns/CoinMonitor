@@ -23,6 +23,7 @@ import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -131,29 +132,53 @@ class CoinViewModelTest {
 
         val coinList = mutableListOf(
             CoinInfo(MarketType.UPBIT.id, "BTC", "KRW-BTC", price = "0"),
-            CoinInfo(MarketType.BITHUMB.id, "ETH", "KRW-ETH", price = "0")
+            CoinInfo(MarketType.BITHUMB.id, "ETH", "KRW-ETH", price = "0"),
+            CoinInfo(MarketType.BINANCE.id, "BTC", "BTCUSDT", price = "0"),
+            CoinInfo(MarketType.BYBIT.id, "ETH", "ETHUSDT", price = "0")
         )
-        val mockApiResultTicker = ApiResult.Success(Ticker().apply {
-            add(Ticker.Item("BTC", "1000"))
-            add(Ticker.Item("ETH","2000"))
-        })
 
-        coEvery { coinTickerUseCaseGroup.getUpbitTicker(coinList[0].code) } returns flowOf(mockApiResultTicker)
-        coEvery { coinTickerUseCaseGroup.getBithumbTicker(coinList[1].code) } returns flowOf(mockApiResultTicker)
+        coEvery { coinTickerUseCaseGroup.getUpbitTicker(eq(coinList[0].code)) } returns flowOf(
+            ApiResult.Success(
+                Ticker().apply { add(Ticker.Item(code = coinList[0].code, price = "10000")) }
+            )
+        )
+        coEvery { coinTickerUseCaseGroup.getBithumbTicker(eq(coinList[1].code)) } returns flowOf(
+            ApiResult.Success(
+                Ticker().apply { add(Ticker.Item(code = coinList[1].code, price = "20000")) }
+            )
+        )
+        coEvery { coinTickerUseCaseGroup.getBinanceTicker("[\"BTC\"]") } returns flowOf(
+            ApiResult.Success(
+                Ticker().apply { add(Ticker.Item(code = coinList[2].code, price = "30000")) }
+            )
+        )
+        coEvery { coinTickerUseCaseGroup.getBybitTicker(eq(coinList[3].code)) } returns flowOf(
+            ApiResult.Success(
+                Ticker().apply { add(Ticker.Item(code = coinList[3].code, price = "40000")) }
+            )
+        )
 
-        coEvery { mockViewModel.updateList(any()) } just Runs
+        every { mapper.domainToUIPrice(MarketType.UPBIT.id, "10000") } returns "format10000"
+        every { mapper.domainToUIPrice(MarketType.BITHUMB.id, "20000") } returns "format20000"
+        every { mapper.domainToUIPrice(MarketType.BINANCE.id, "30000") } returns "format30000"
+        every { mapper.domainToUIPrice(MarketType.BYBIT.id, "40000") } returns "format40000"
+
+        var onCompleteCalled = false
+        val onComplete = {onCompleteCalled = true}
 
         //when
-        viewModel.fetchTicker(coinList, mockViewModel, onComplete = { })
+        viewModel.fetchTicker(coinList, mockViewModel, onComplete)
 
         // Then
         advanceUntilIdle()
-        coVerify { mockViewModel.updateList(any()) }
 
-        assertEquals("1000", coinList.first { it.code == "BTC" }.price)
-        assertEquals("2000", coinList.first { it.code == "ETH" }.price)
+        assertEquals("format10000", coinList.first { it.market == MarketType.UPBIT.id && it.code == "BTC" }.price)
+        assertEquals("format20000", coinList.first { it.market == MarketType.BITHUMB.id && it.code == "ETH" }.price)
+        assertEquals("format30000", coinList.first { it.market == MarketType.BINANCE.id && it.code == "BTC" }.price)
+        assertEquals("format40000", coinList.first { it.market == MarketType.BYBIT.id && it.code == "ETH" }.price)
 
-        // 사용된 함수들에 대해 호출 검증
+        assertTrue(onCompleteCalled)
+
         coVerify { coinTickerUseCaseGroup.getUpbitTicker(any()) }
         coVerify { coinTickerUseCaseGroup.getBithumbTicker(any()) }
     }
