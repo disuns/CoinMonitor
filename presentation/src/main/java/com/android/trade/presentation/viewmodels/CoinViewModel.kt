@@ -35,7 +35,7 @@ class CoinViewModel @Inject constructor(
         return mapper.domainToCoinInfo(flow, market)
     }
 
-    fun fetchMarketSequentially(markets: List<String>, viewModel: RoomAndWebSocketViewModel) {
+    fun fetchMarketSequentially(markets: List<String>, viewModel: RoomAndWebSocketViewModel, onFetchFinish:()->Unit) {
         viewModelScope.launch {
             viewModel.getAllCoin()
 
@@ -58,6 +58,8 @@ class CoinViewModel @Inject constructor(
             jobList.joinAll()
 
             viewModel.sendAllMessage()
+
+            onFetchFinish()
         }
     }
 

@@ -111,8 +111,11 @@ class CoinViewModelTest {
         coEvery { mockViewModel.insertCoinList(any()) } just Runs
         coEvery { mockViewModel.sendAllMessage() } just Runs
 
+        var onFetchFinishCalled = false
+        val onFetchFinish = {onFetchFinishCalled = true}
+
         //When
-        viewModel.fetchMarketSequentially(markets, mockViewModel)
+        viewModel.fetchMarketSequentially(markets, mockViewModel, onFetchFinish)
 
         //Then
         advanceUntilIdle()
@@ -121,6 +124,8 @@ class CoinViewModelTest {
         coVerify(exactly = 1) { mockViewModel.insertCoinList(coinListUpbit) }
         coVerify(exactly = 1) { mockViewModel.insertCoinList(coinListBithumb) }
         coVerify(exactly = 1) { mockViewModel.insertCoinList(coinListBinance) }
+
+        assertTrue(onFetchFinishCalled)
 
         coVerify { mockViewModel.sendAllMessage() }
     }
