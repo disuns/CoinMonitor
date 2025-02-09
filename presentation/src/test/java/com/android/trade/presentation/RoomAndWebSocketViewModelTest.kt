@@ -62,9 +62,7 @@ class RoomAndWebSocketViewModelTest {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
 
-        // ViewModel 생성 시 WebSocket 리스너 캡처
         every { webSocketManager.setWebSocketListener(capture(webSocketListenerSlot)) } just Runs
-
 
         viewModel = spyk(
             RoomAndWebSocketViewModel(
@@ -97,33 +95,25 @@ class RoomAndWebSocketViewModelTest {
         Dispatchers.resetMain()
         clearAllMocks()
 
-        // ArchTaskExecutor 설정 복구
         ArchTaskExecutor.getInstance().setDelegate(null)
     }
 
     @Test
-    fun `webSocket listener updates messages LiveData`() = runTest {
+    fun `webSocket listener 테스트`() = runTest {
         // Given
-        val dummyWebSocketData = WebSocketData(/* 필요한 필드 값 설정 */)
-        val uiWebSocketData = WebSocketData(/* UI 변환된 필드 값 설정 */)
+        val dummyWebSocketData = WebSocketData(market = "market", code = "code", price = "1000")
+        val uiWebSocketData = WebSocketData(market = "market", code = "code", price = "1000")
 
-        // WebSocket 리스너를 설정하는 Slot
-        val webSocketListenerSlot = slot<(WebSocketData?) -> Unit>()
-
-        // WebSocketManager가 setWebSocketListener를 호출하면 해당 Slot을 캡처하도록 설정
-        every { webSocketManager.setWebSocketListener(capture(webSocketListenerSlot)) } just Runs
-
-        // Mapper가 WebSocketData를 UI 모델로 변환하도록 설정
         every { mapper.domainToUIPrice(dummyWebSocketData) } returns uiWebSocketData
 
-        // When: 캡처한 WebSocket 리스너를 직접 호출하여 데이터를 전달
+        // When
         webSocketListenerSlot.captured.invoke(dummyWebSocketData)
-        advanceUntilIdle()  // 비동기 작업 완료 대기
 
-        // Then: LiveData가 올바르게 업데이트되었는지 확인
+        // Then
+        advanceUntilIdle()
+
         assertEquals(uiWebSocketData, viewModel.messages.value)
 
-        // Mapper가 변환을 수행했는지 검증
         coVerify { mapper.domainToUIPrice(dummyWebSocketData) }
     }
 
