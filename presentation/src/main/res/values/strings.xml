@@ -3,4 +3,7 @@
 
     <string name="dollor">\$%s</string>
     <string name="won">₩%s</string>
+
+    <string name="loadingMarkets">목록 로딩중</string>
+    <string name="callMarketsCoins">코인 가져오기 </string>
 </resources>

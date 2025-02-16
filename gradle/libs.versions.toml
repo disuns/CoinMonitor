@@ -23,6 +23,9 @@ logger= "2.2.0"
 navigator = "2.8.5"
 room = "2.7.0-alpha12"
 androidx-datastore = "1.1.1"
+mockk = "1.13.12"
+coroutines = "1.8.0"
+turbine = "0.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +63,12 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room"}
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore"}
 #admob
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
+#mockk
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+#coroutinestest
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+#turbine
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
