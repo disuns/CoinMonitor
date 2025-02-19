@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.trade.common.enum.MarketType
 import com.android.trade.domain.models.CoinInfo
+import com.android.trade.presentation.R
 import com.android.trade.presentation.adapter.CoinInfoAdapter
 import com.android.trade.presentation.databinding.FragmentMainBinding
 import com.android.trade.presentation.ui.base.BaseFragment
@@ -53,10 +54,15 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     override fun setupView() {
         bind {
             setAndPlayAdMob()
-            coinViewModel.fetchMarketSequentially(
-                MarketType.entries.map { it.id },
-                roomAndWebSocketViewModel
-            )
+
+            callMarkets()
+
+
+//            리스트 전체 새로고침
+//            {
+//                updateCallMarketsBtn(false)
+//                callMarkets()
+//            }
 
             adapter = CoinInfoAdapter(coins) { position ->
                 roomAndWebSocketViewModel.deleteCoin(coins[position])
@@ -132,6 +138,26 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 }
                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
             }
+        }
+    }
+
+    private fun updateCallMarketsBtn(fetchResult : Boolean){
+        bind {
+            btnGetMarket.isEnabled = fetchResult
+
+            val btnText = if(fetchResult) R.string.callMarketsCoins
+            else R.string.loadingMarkets
+
+            btnGetMarket.text = resources.getString(btnText)
+        }
+    }
+
+    private fun callMarkets(){
+        coinViewModel.fetchMarketSequentially(
+            MarketType.entries.map { it.id },
+            roomAndWebSocketViewModel
+        ){
+            updateCallMarketsBtn(true)
         }
     }
 }
