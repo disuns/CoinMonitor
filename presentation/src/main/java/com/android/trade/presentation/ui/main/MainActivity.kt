@@ -10,7 +10,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.android.trade.common.utils.DARK_MODE_KEY
 import com.android.trade.common.utils.dataStore
+import com.android.trade.common.utils.logMessage
 import com.android.trade.presentation.R
 import com.android.trade.presentation.databinding.ActivityMainBinding
 import com.android.trade.presentation.ui.base.BaseActivity
@@ -23,7 +25,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
-    private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
+    private var isDarkModeSwitching = false
 
     private val navController: NavController by lazy {
         findNavController(R.id.container)
@@ -34,11 +36,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         enableEdgeToEdge()
 
         lifecycleScope.launch {
-            getDarkModeSetting()
-                .conflate()
-                .collect { isDarkMode ->
-                    setAppTheme(isDarkMode)
-                }
+            getDarkModeSetting().collect { isDarkMode ->
+                setAppTheme(isDarkMode)
+            }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -50,15 +50,20 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
 
     override fun setupView() {
         binding.btnDarkMode.setOnClickListener {
+            if (isDarkModeSwitching) return@setOnClickListener
+
+            isDarkModeSwitching = true
             lifecycleScope.launch {
                 val currentMode = getDarkModeSetting().first()
                 saveDarkModeSetting(!currentMode)
+
+                isDarkModeSwitching = false
             }
         }
     }
 
     private fun setAppTheme(isDarkMode: Boolean) {
-        binding.btnDarkMode.text = if (isDarkMode) "Light" else "Dark"
+        binding.btnDarkMode.text = if (isDarkMode) "Dark" else "Light"
         val mode = if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(mode)
     }
