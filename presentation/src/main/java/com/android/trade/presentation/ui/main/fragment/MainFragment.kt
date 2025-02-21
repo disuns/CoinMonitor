@@ -2,11 +2,13 @@ package com.android.trade.presentation.ui.main.fragment
 
 import android.view.View
 import android.os.Build
+import android.os.Bundle
 import android.view.WindowMetrics
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.trade.common.enum.MarketType
+import com.android.trade.common.utils.logMessage
 import com.android.trade.domain.models.CoinInfo
 import com.android.trade.presentation.R
 import com.android.trade.presentation.adapter.CoinInfoAdapter
@@ -51,16 +53,17 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             )
         }
 
-    override fun setupView() {
+    override fun setupView(savedInstanceState: Bundle?) {
         bind {
             setAndPlayAdMob()
 
-            callMarkets()
+            if(savedInstanceState == null){
+                callMarkets()
+                }
 
 
 //            리스트 전체 새로고침
 //            {
-//                updateCallMarketsBtn(false)
 //                callMarkets()
 //            }
 
@@ -105,9 +108,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        if(activity?.isChangingConfigurations == true) {
+            super.onDestroyView()
+            return
+        }
+
         roomAndWebSocketViewModel.deleteCoinList()
         roomAndWebSocketViewModel.disconnectAll()
+        super.onDestroyView()
     }
 
     private fun setAndPlayAdMob() {
@@ -153,6 +161,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     }
 
     private fun callMarkets(){
+        updateCallMarketsBtn(false)
         coinViewModel.fetchMarketSequentially(
             MarketType.entries.map { it.id },
             roomAndWebSocketViewModel
